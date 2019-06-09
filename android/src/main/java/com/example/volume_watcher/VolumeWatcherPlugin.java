@@ -37,6 +37,11 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         eventChannel.setStreamHandler(volumePlugin);
     }
 
+    /**
+     * method channel
+     * @param methodCall
+     * @param result
+     */
     @Override
     public void onMethodCall(MethodCall methodCall, Result result) {
         if (methodCall.method.equals("getMaxVolume")) {
@@ -48,17 +53,11 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         }
     }
 
-    @Override
-    public void onVolumeChanged(int volume) {
-        if(BuildConfig.DEBUG){
-            Log.d(VolumeChangeObserver.TAG, "onVolumeChanged()--->volume = " + volume);
-        }
-
-        if (eventSink != null) {
-            eventSink.success(volume);
-        }
-    }
-
+    /**
+     * event channel listener
+     * @param o
+     * @param eventSink
+     */
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
         if(BuildConfig.DEBUG){
@@ -73,7 +72,19 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         }
         eventSink.success(initVolume);
 
+        //注册监听器
         mVolumeChangeObserver.registerReceiver();
+    }
+
+    @Override
+    public void onVolumeChanged(int volume) {
+        if(BuildConfig.DEBUG){
+            Log.d(VolumeChangeObserver.TAG, "onVolumeChanged()--->volume = " + volume);
+        }
+
+        if (eventSink != null) {
+            eventSink.success(volume);
+        }
     }
 
     @Override

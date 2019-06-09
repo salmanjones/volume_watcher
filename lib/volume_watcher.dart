@@ -19,7 +19,7 @@ class VolumeWatcher extends StatefulWidget{
    * 获取当前系统最大音量
    */
   static Future<num> get getMaxVolume async {
-    final num maxVolume = await methodChannel.invokeMethod('getMaxVolume');
+    final num maxVolume = await methodChannel.invokeMethod('getMaxVolume',{});
     return maxVolume;
   }
 
@@ -27,7 +27,7 @@ class VolumeWatcher extends StatefulWidget{
    * 获取当前系统音量
    */
   static Future<num> get getCurrentVolume async {
-    final num currentVolume = await methodChannel.invokeMethod('getCurrentVolume');
+    final num currentVolume = await methodChannel.invokeMethod('getCurrentVolume',{});
     return currentVolume;
   }
 }
@@ -40,10 +40,14 @@ class VolumeState extends State<VolumeWatcher>{
   void initState() {
     super.initState();
     if (_subscription == null) {
-      _subscription = VolumeWatcher.eventChannel.receiveBroadcastStream().listen(_onEvent);
+      //event channel 注册
+      _subscription = VolumeWatcher.eventChannel.receiveBroadcastStream("init").listen(_onEvent, onError:_onError);
     }
   }
   
+  /*
+   * event channel回调
+   */
   void _onEvent(Object event) {
     if (mounted) {
       if (widget.onVolumeChangeListener != null) {
@@ -54,6 +58,14 @@ class VolumeState extends State<VolumeWatcher>{
       });
     }
   }
+
+  /*
+   * event channel回调失败
+   */
+  void _onError(Object error) {
+    print('Battery status: unknown.' + error.toString());
+  }
+
 
   void setVolume(num volume) {
     if (mounted) {
