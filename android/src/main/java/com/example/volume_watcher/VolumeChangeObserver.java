@@ -13,7 +13,7 @@ import java.lang.ref.WeakReference;
  * 系统音量监听
  */
 public class VolumeChangeObserver {
-
+    public final static String TAG = "volume_watcher";
     private static final String VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION";
     private static final String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
 
@@ -87,7 +87,7 @@ public class VolumeChangeObserver {
                 mVolumeChangeListener = null;
                 mRegistered = false;
             } catch (Exception e) {
-                e.printStackTrace();
+                Log.e(TAG, "unregisterReceiver: ", e);
             }
         }
     }
@@ -107,11 +107,13 @@ public class VolumeChangeObserver {
                 if (observer != null) {
                     VolumeChangeListener listener = observer.getVolumeChangeListener();
                     if (listener != null) {
-
                         int volume = observer.getCurrentMusicVolume();
-                        Log.e("VolumeBroadcastReceiver","volume="+volume);
                         if (volume >= 0) {
                             listener.onVolumeChanged(volume);
+                        }
+
+                        if(BuildConfig.DEBUG){
+                            Log.d(TAG,"volume="+volume);
                         }
                     }
                 }
