@@ -11,13 +11,14 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     VolumeWatcherPlugin* instance = [[VolumeWatcherPlugin alloc] init];
+    FlutterMethodChannel* methodChannel = [FlutterMethodChannel
+                                     methodChannelWithName:@"volume_watcher_method"
+                                     binaryMessenger:[registrar messenger]];
+    [registrar addMethodCallDelegate:instance channel:methodChannel];
     
-    FlutterMethodChannel* methodChanel = [FlutterMethodChannel methodChannelWithName:@"volume_watcher"
-            binaryMessenger:[registrar messenger]];
-    [registrar addMethodCallDelegate:instance channel:methodChanel];
-    
-    FlutterEventChannel* eventChannel = [FlutterEventChannel eventChannelWithName:@"volume_watcher"
-             binaryMessenger:[registrar messenger]];
+    FlutterEventChannel* eventChannel = [FlutterEventChannel
+                                     eventChannelWithName:@"volume_watcher_event"
+                                     binaryMessenger:[registrar messenger]];
     [eventChannel setStreamHandler:instance];
 }
 
@@ -36,9 +37,14 @@
  */
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"getMaxVolume" isEqualToString:call.method]) {
-        int currMaxValue = 100;
-        NSNumber *maxValue = [NSNumber numberWithInt:(currMaxValue)];
-        result(maxValue);
+        //最大音量
+        float currMaxValue = 1.0;
+        result([NSNumber numberWithFloat:currMaxValue]);
+    } else if ([@"getCurrentVolume" isEqualToString:call.method]) {
+        // 获取系统音量
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        float currentVol = audioSession.outputVolume;
+        result([NSNumber numberWithFloat:currentVol]);
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -49,7 +55,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
 }
 
-#pragma mark - <FlutterStreamHandler>
 // // 这个onListen是Flutter端开始监听这个channel时的回调，第二个参数 EventSink是用来传数据的载体。
 - (FlutterError* _Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(FlutterEventSink)events {
     _eventSink = events;
