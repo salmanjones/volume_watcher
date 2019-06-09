@@ -16,10 +16,10 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
     private static final String CHANNEL = "volume_watcher";
     private VolumeChangeObserver mVolumeChangeObserver;
     private EventChannel.EventSink eventSink;
-    private Activity activity;
 
-    private VolumeWatcherPlugin(Activity activity) {
-        this.activity = activity;
+    public VolumeWatcherPlugin(Activity activity) {
+        mVolumeChangeObserver = new VolumeChangeObserver(activity);
+        mVolumeChangeObserver.setVolumeChangeListener(this);
     }
 
     /**
@@ -28,12 +28,12 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
     public static void registerWith(Registrar registrar) {
         VolumeWatcherPlugin volumePlugin = new VolumeWatcherPlugin(registrar.activity());
 
-        //method channel
-        final MethodChannel methodChannel = new MethodChannel(registrar.messenger(), CHANNEL);
-        methodChannel.setMethodCallHandler(volumePlugin);
+        //method chanel
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), CHANNEL + "_method");
+        channel.setMethodCallHandler(volumePlugin);
 
         //event channel
-        final EventChannel eventChannel = new EventChannel(registrar.messenger(), CHANNEL);
+        final EventChannel eventChannel = new EventChannel(registrar.messenger(), CHANNEL + "_event");
         eventChannel.setStreamHandler(volumePlugin);
     }
 
@@ -41,6 +41,8 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
     public void onMethodCall(MethodCall methodCall, Result result) {
         if (methodCall.method.equals("getMaxVolume")) {
             result.success(mVolumeChangeObserver.getMaxMusicVolume());
+        } else if (methodCall.method.equals("getCurrentVolume")) {
+            result.success(mVolumeChangeObserver.getCurrentMusicVolume());
         } else {
             result.notImplemented();
         }
@@ -65,8 +67,6 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         this.eventSink = eventSink;
 
         //实例化对象并设置监听器
-        mVolumeChangeObserver = new VolumeChangeObserver(activity);
-        mVolumeChangeObserver.setVolumeChangeListener(this);
         int initVolume = mVolumeChangeObserver.getCurrentMusicVolume();
         if(BuildConfig.DEBUG){
             Log.d(VolumeChangeObserver.TAG, "initVolume = " + initVolume);

@@ -34,8 +34,7 @@ public class VolumeChangeObserver {
 
     public VolumeChangeObserver(Context context) {
         mContext = context;
-        mAudioManager = (AudioManager) context.getApplicationContext()
-                .getSystemService(Context.AUDIO_SERVICE);
+        mAudioManager = (AudioManager) context.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
     }
 
     /**
