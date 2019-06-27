@@ -1,4 +1,4 @@
-package com.magugi.plugin.volume.watcher;
+package com.magugi.plugin.volume_watcher;
 
 import android.app.Activity;
 import android.util.Log;
@@ -78,10 +78,6 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
 
     @Override
     public void onVolumeChanged(int volume) {
-        if(BuildConfig.DEBUG){
-            Log.d(VolumeChangeObserver.TAG, "onVolumeChanged()--->volume = " + volume);
-        }
-
         if (eventSink != null) {
             eventSink.success(volume);
         }

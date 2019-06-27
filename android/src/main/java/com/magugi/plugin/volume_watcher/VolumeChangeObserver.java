@@ -1,4 +1,4 @@
-package com.magugi.plugin.volume.watcher;
+package com.magugi.plugin.volume_watcher;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
