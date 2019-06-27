@@ -1,6 +1,6 @@
 # volume_watcher
-
-A new flutter plugin project.
+watcher the volume changed on android and ios.
+监控安卓和ios的音量变化
 
 ## Getting Started
 
