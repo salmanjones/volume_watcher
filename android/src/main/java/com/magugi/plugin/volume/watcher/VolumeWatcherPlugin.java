@@ -1,4 +1,4 @@
-package com.example.volume_watcher;
+package com.magugi.plugin.volume.watcher;
 
 import android.app.Activity;
 import android.util.Log;

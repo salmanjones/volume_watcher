@@ -10,7 +10,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   num currentVolume = 0;
-  num _platformVersion = 0;
+  num initVolume = 0;
 
   @override
   void initState(){
@@ -19,8 +19,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initPlatformState() async {
-    num platformVersion;
-    platformVersion = await VolumeWatcher.getCurrentVolume;
+    num initVolume = await VolumeWatcher.getCurrentVolume;
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -28,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      this.initVolume = initVolume;
     });
   }
 
@@ -50,7 +49,7 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
               Text("当前音量=${currentVolume}"),
-              Text("当前音量=${_platformVersion}")
+              Text("当前音量=${initVolume}")
             ]),
       ),
     );

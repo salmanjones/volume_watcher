@@ -1,4 +1,4 @@
-package com.example.volume_watcher_example;
+package com.magugi.plugin.volume.watcher.example;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
