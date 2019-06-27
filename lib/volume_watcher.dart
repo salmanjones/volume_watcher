@@ -66,15 +66,6 @@ class VolumeState extends State<VolumeWatcher>{
     print('Battery status: unknown.' + error.toString());
   }
 
-
-  void setVolume(num volume) {
-    if (mounted) {
-      setState(() {
-        currentVolume = volume;
-      });
-    }
-  }
-
   @override
   void dispose() {
     if (_subscription != null) {
@@ -93,24 +84,6 @@ class VolumeState extends State<VolumeWatcher>{
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (currentVolume == 0) {
-          setVolume(0.5);
-        } else {
-          setVolume(0);
-        }
-      },
-      child: Container(
-        color: Theme.of(context).dialogBackgroundColor,
-        padding: const EdgeInsets.only(
-          left: 0.0,
-          right: 8.0,
-        ),
-        child: Icon(
-          (currentVolume > 0) ? Icons.volume_up : Icons.volume_off,
-        ),
-      ),
-    );
+    return null;
   }
 }
