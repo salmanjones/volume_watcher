@@ -1,7 +1,7 @@
 # volume_watcher
-watcher the volume changed on android and ios.
+```watcher the volume changed on android and ios.
 监控安卓和ios的音量变化
-
+```
 ## Getting Started
 
 This project is a starting point for a Flutter
