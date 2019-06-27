@@ -1,8 +1,8 @@
 name: volume_watcher
 description: A new flutter plugin project.
 version: 0.0.1
-author:
-homepage:
+author: Salman,<salman.c.zhang@outlook.com>
+homepage: https://github.com/yangming1009/volume_watcher
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
