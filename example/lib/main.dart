@@ -11,6 +11,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   num currentVolume = 0;
   num initVolume = 0;
+  num maxVolume = 0;
 
   @override
   void initState(){
@@ -20,6 +21,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initPlatformState() async {
     num initVolume = await VolumeWatcher.getCurrentVolume;
+    num maxVolume = await VolumeWatcher.getMaxVolume;
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
@@ -28,6 +30,7 @@ class _MyAppState extends State<MyApp> {
 
     setState(() {
       this.initVolume = initVolume;
+      this.maxVolume = maxVolume;
     });
   }
 
@@ -48,8 +51,9 @@ class _MyAppState extends State<MyApp> {
                   });
                 },
               ),
-              Text("当前音量=${currentVolume}"),
-              Text("当前音量=${initVolume}")
+              Text("最大音量=${maxVolume}"),
+              Text("初始音量=${initVolume}"),
+              Text("当前音量=${currentVolume}")
             ]),
       ),
     );
