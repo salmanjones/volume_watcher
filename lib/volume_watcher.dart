@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
-class VolumeWatcher extends StatefulWidget{
+class VolumeWatcher extends StatefulWidget {
   final ValueChanged<num> onVolumeChangeListener;
   VolumeWatcher({Key key, this.onVolumeChangeListener}) : super(key: key);
 
-  static const MethodChannel methodChannel = const MethodChannel('volume_watcher_method');
-  static const EventChannel eventChannel = const EventChannel('volume_watcher_event');
+  static const MethodChannel methodChannel =
+      const MethodChannel('volume_watcher_method');
+  static const EventChannel eventChannel =
+      const EventChannel('volume_watcher_event');
 
   @override
   State<StatefulWidget> createState() {
@@ -19,7 +21,7 @@ class VolumeWatcher extends StatefulWidget{
    * 获取当前系统最大音量
    */
   static Future<num> get getMaxVolume async {
-    final num maxVolume = await methodChannel.invokeMethod('getMaxVolume',{});
+    final num maxVolume = await methodChannel.invokeMethod('getMaxVolume', {});
     return maxVolume;
   }
 
@@ -27,12 +29,13 @@ class VolumeWatcher extends StatefulWidget{
    * 获取当前系统音量
    */
   static Future<num> get getCurrentVolume async {
-    final num currentVolume = await methodChannel.invokeMethod('getCurrentVolume',{});
+    final num currentVolume =
+        await methodChannel.invokeMethod('getCurrentVolume', {});
     return currentVolume;
   }
 }
 
-class VolumeState extends State<VolumeWatcher>{
+class VolumeState extends State<VolumeWatcher> {
   StreamSubscription _subscription;
   num currentVolume = 0;
 
@@ -41,10 +44,12 @@ class VolumeState extends State<VolumeWatcher>{
     super.initState();
     if (_subscription == null) {
       //event channel 注册
-      _subscription = VolumeWatcher.eventChannel.receiveBroadcastStream("init").listen(_onEvent, onError:_onError);
+      _subscription = VolumeWatcher.eventChannel
+          .receiveBroadcastStream("init")
+          .listen(_onEvent, onError: _onError);
     }
   }
-  
+
   /*
    * event channel回调
    */

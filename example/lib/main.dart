@@ -14,8 +14,8 @@ class _MyAppState extends State<MyApp> {
   num maxVolume = 0;
 
   @override
-  void initState(){
-    super.initState(); 
+  void initState() {
+    super.initState();
     initPlatformState();
   }
 
