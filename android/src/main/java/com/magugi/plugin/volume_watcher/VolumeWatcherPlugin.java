@@ -53,7 +53,7 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         } else if (methodCall.method.equals("setVolume")) {
             boolean success = true;
             try{
-                float volumeValue = methodCall.argument("volume");
+                int volumeValue = (int)Double.parseDouble(methodCall.argument("volume").toString());
                 mVolumeChangeObserver.setVolume((int)volumeValue);
             }catch (Exception ex){
                 success = false;
