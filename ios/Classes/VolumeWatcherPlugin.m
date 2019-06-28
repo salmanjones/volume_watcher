@@ -34,7 +34,7 @@
         NSDictionary *dic = call.arguments;
         NSLog(@"arguments = %@", dic);
         //最大音量
-        float currMaxValue = 1.0;
+        float currMaxValue = 1.0f;
         result([NSNumber numberWithFloat:currMaxValue]);
     } else if ([@"getCurrentVolume" isEqualToString:call.method]) {
         //参数
@@ -45,9 +45,47 @@
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
         float currentVol = audioSession.outputVolume;
         result([NSNumber numberWithFloat:currentVol]);
+    } else if ([@"setVolume" isEqualToString:call.method]) {        
+        @autoreleasepool {
+            bool success = true;
+            @try {
+                //参数
+                NSDictionary *dic = call.arguments;
+                NSLog(@"arguments = %@", dic);
+                NSNumber* volumeNumber = dic[@"volume"];
+                float volumeValue = volumeNumber.floatValue;
+                
+                [self setVolume:(volumeValue)];
+            } @catch (NSException *exception) {
+                NSLog(@"%@", exception);
+                success = false;
+            }
+            
+            result([NSNumber numberWithBool:success]);
+        }
     } else {
         result(FlutterMethodNotImplemented);
     }
+}
+
+/**
+ * 设置系统音量
+ */
+- (void)setVolume: (float)value
+{
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    UISlider *volumeViewSlider = nil;
+    
+    for (UIView *view in volumeView.subviews) {
+        if ([view isKindOfClass:[UISlider class]]) {
+            volumeViewSlider = (UISlider *)view;
+            break;
+        }
+    }
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        volumeViewSlider.value = value;
+    });
 }
 
 /**

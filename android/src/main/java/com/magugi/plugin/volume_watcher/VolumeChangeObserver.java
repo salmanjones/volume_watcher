@@ -55,10 +55,16 @@ public class VolumeChangeObserver {
         return mAudioManager != null ? mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) : 15;
     }
 
+    public void setVolume(int volume){
+        if(mAudioManager != null){
+            // 设置音量
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_PLAY_SOUND);
+        }
+    }
+
     public VolumeChangeListener getVolumeChangeListener() {
         return mVolumeChangeListener;
     }
-
     public void setVolumeChangeListener(VolumeChangeListener volumeChangeListener) {
         this.mVolumeChangeListener = volumeChangeListener;
     }

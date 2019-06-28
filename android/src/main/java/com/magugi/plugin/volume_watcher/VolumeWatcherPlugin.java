@@ -1,6 +1,7 @@
 package com.magugi.plugin.volume_watcher;
 
 import android.app.Activity;
+import android.media.AudioManager;
 import android.util.Log;
 
 import io.flutter.plugin.common.EventChannel;
@@ -39,6 +40,7 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
 
     /**
      * method channel
+     *
      * @param methodCall
      * @param result
      */
@@ -48,6 +50,15 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
             result.success(mVolumeChangeObserver.getMaxMusicVolume());
         } else if (methodCall.method.equals("getCurrentVolume")) {
             result.success(mVolumeChangeObserver.getCurrentMusicVolume());
+        } else if (methodCall.method.equals("setVolume")) {
+            boolean success = true;
+            try{
+                float volumeValue = methodCall.argument("volume");
+                mVolumeChangeObserver.setVolume((int)volumeValue);
+            }catch (Exception ex){
+                success = false;
+            }
+            result.success(success);
         } else {
             result.notImplemented();
         }
@@ -55,19 +66,20 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
 
     /**
      * event channel listener
+     *
      * @param o
      * @param eventSink
      */
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Log.d(VolumeChangeObserver.TAG, "onListen");
         }
         this.eventSink = eventSink;
 
         //实例化对象并设置监听器
         int initVolume = mVolumeChangeObserver.getCurrentMusicVolume();
-        if(BuildConfig.DEBUG){
+        if (BuildConfig.DEBUG) {
             Log.d(VolumeChangeObserver.TAG, "initVolume = " + initVolume);
         }
         eventSink.success(initVolume);

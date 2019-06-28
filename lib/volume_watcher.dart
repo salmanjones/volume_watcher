@@ -33,6 +33,15 @@ class VolumeWatcher extends StatefulWidget {
         await methodChannel.invokeMethod('getCurrentVolume', {});
     return currentVolume;
   }
+
+  /*
+   * 设置系统音量
+   */
+  static Future<bool> setVolume(double volume) async {
+    final bool success =
+        await methodChannel.invokeMethod('setVolume', {'volume':volume});
+    return success;
+  }
 }
 
 class VolumeState extends State<VolumeWatcher> {
