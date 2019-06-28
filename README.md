@@ -4,12 +4,12 @@
   1.实时监听返回系统音量值的改变，并返回音量值。 
   2.返回系统支持的最大音量，防止android不同机型最大值不同。 
   3.返回系统改变音量前的初始值。
-  4.尚未支持设置音量，如有这方面需求，请提issues。
-  5.ios不是很熟，如有更好实现方案请提出。
+  4.支持设置媒体音量
   
 对外提供如下方法：
 getMaxVolume
 getCurrentVolume
+setVolume(0.0)
 
 对外提供监听：
 onVolumeChangeListener
