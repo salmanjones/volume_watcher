@@ -16,6 +16,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await VolumeWatcher.platformVersion, '42');
+    expect(await VolumeWatcher.getMaxVolume, 30);
   });
 }
