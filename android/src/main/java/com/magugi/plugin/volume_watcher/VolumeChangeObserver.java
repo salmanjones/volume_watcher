@@ -55,6 +55,10 @@ public class VolumeChangeObserver {
         return mAudioManager != null ? mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) : 15;
     }
 
+    /**
+     * 设置音量
+     * @param volume
+     */
     public void setVolume(int volume){
         if(mAudioManager != null){
             // 设置音量
