@@ -62,8 +62,8 @@ public class VolumeChangeObserver {
     public void setVolume(int volume){
         if(mAudioManager != null){
             // 设置音量
-            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, AudioManager.FLAG_PLAY_SOUND);
-            if(volume<=1){
+            mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+            if(volume<1){
                 mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER,  0);
             }
         }
