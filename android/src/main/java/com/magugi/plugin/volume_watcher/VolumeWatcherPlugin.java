@@ -27,7 +27,6 @@ public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHa
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         mVolumeChangeObserver = new VolumeChangeObserver(binding.getApplicationContext());
-        mVolumeChangeObserver.setVolumeChangeListener(this);
 
         //method chanel
         final MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), CHANNEL + "_method");
@@ -43,7 +42,6 @@ public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHa
 
     public VolumeWatcherPlugin(Activity activity) {
         mVolumeChangeObserver = new VolumeChangeObserver(activity);
-        mVolumeChangeObserver.setVolumeChangeListener(this);
     }
 
     /**
@@ -98,6 +96,8 @@ public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHa
         if (BuildConfig.DEBUG) {
             Log.d(VolumeChangeObserver.TAG, "onListen");
         }
+        mVolumeChangeObserver.setVolumeChangeListener(this);
+
         this.eventSink = eventSink;
 
         //实例化对象并设置监听器
@@ -113,6 +113,9 @@ public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHa
 
     @Override
     public void onVolumeChanged(double volume) {
+        if (BuildConfig.DEBUG) {
+            Log.d(VolumeChangeObserver.TAG, "VolumeChanged -> " + volume);
+        }
         if (eventSink != null) {
             eventSink.success(volume);
         }
