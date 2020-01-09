@@ -1,9 +1,12 @@
 package com.magugi.plugin.volume_watcher;
 
 import android.app.Activity;
-import android.media.AudioManager;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import io.flutter.BuildConfig;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -13,10 +16,30 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * 系统音量监听
  */
-public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeChangeObserver.VolumeChangeListener, MethodChannel.MethodCallHandler {
+public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHandler, VolumeChangeObserver.VolumeChangeListener, MethodChannel.MethodCallHandler {
     private static final String CHANNEL = "volume_watcher";
     private VolumeChangeObserver mVolumeChangeObserver;
     private EventChannel.EventSink eventSink;
+
+    public VolumeWatcherPlugin() {}
+
+    // 注册插件
+    @Override
+    public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+        mVolumeChangeObserver = new VolumeChangeObserver(binding.getApplicationContext());
+        mVolumeChangeObserver.setVolumeChangeListener(this);
+
+        //method chanel
+        final MethodChannel channel = new MethodChannel(binding.getBinaryMessenger(), CHANNEL + "_method");
+        channel.setMethodCallHandler(this);
+
+        //event channel
+        final EventChannel eventChannel = new EventChannel(binding.getBinaryMessenger(), CHANNEL + "_event");
+        eventChannel.setStreamHandler(this);
+    }
+
+    @Override
+    public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {}
 
     public VolumeWatcherPlugin(Activity activity) {
         mVolumeChangeObserver = new VolumeChangeObserver(activity);
@@ -53,8 +76,8 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         } else if (methodCall.method.equals("setVolume")) {
             boolean success = true;
             try{
-                int volumeValue = (int)Double.parseDouble(methodCall.argument("volume").toString());
-                mVolumeChangeObserver.setVolume((int)volumeValue);
+                double volumeValue = Double.parseDouble(methodCall.argument("volume").toString());
+                mVolumeChangeObserver.setVolume(volumeValue);
             }catch (Exception ex){
                 success = false;
             }
@@ -78,7 +101,7 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
         this.eventSink = eventSink;
 
         //实例化对象并设置监听器
-        int initVolume = mVolumeChangeObserver.getCurrentMusicVolume();
+        double initVolume = mVolumeChangeObserver.getCurrentMusicVolume();
         if (BuildConfig.DEBUG) {
             Log.d(VolumeChangeObserver.TAG, "initVolume = " + initVolume);
         }
@@ -89,7 +112,7 @@ public class VolumeWatcherPlugin implements EventChannel.StreamHandler, VolumeCh
     }
 
     @Override
-    public void onVolumeChanged(int volume) {
+    public void onVolumeChanged(double volume) {
         if (eventSink != null) {
             eventSink.success(volume);
         }

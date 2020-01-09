@@ -9,6 +9,8 @@ import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+import io.flutter.BuildConfig;
+
 /**
  * 系统音量监听
  */
@@ -23,7 +25,7 @@ public class VolumeChangeObserver {
          *
          * @param volume
          */
-        void onVolumeChanged(int volume);
+        void onVolumeChanged(double volume);
     }
 
     private VolumeChangeListener mVolumeChangeListener;
@@ -31,10 +33,13 @@ public class VolumeChangeObserver {
     private Context mContext;
     private AudioManager mAudioManager;
     private boolean mRegistered = false;
+    // 最大音量
+    private int mMaxVolume;
 
     public VolumeChangeObserver(Context context) {
         mContext = context;
         mAudioManager = (AudioManager) context.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        mMaxVolume = mAudioManager != null ? mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) : 15;
     }
 
     /**
@@ -42,8 +47,9 @@ public class VolumeChangeObserver {
      *
      * @return
      */
-    public int getCurrentMusicVolume() {
-        return mAudioManager != null ? mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC) : -1;
+    public double getCurrentMusicVolume() {
+        int currentVolume = mAudioManager != null ? mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC) : -1;
+        return ((double)currentVolume) / mMaxVolume;
     }
 
     /**
@@ -51,15 +57,24 @@ public class VolumeChangeObserver {
      *
      * @return
      */
-    public int getMaxMusicVolume() {
-        return mAudioManager != null ? mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC) : 15;
+    public double getMaxMusicVolume() {
+        return 1.0;
     }
 
     /**
      * 设置音量
-     * @param volume
+     * @param value
      */
-    public void setVolume(int volume){
+    public void setVolume(double value){
+        double actualValue;
+        if (value > 1.0) {
+            actualValue = 1.0;
+        } else if (value < 0.0) {
+            actualValue = 0.0;
+        } else {
+            actualValue = value;
+        }
+        int volume = (int)Math.round(actualValue * mMaxVolume);
         if(mAudioManager != null){
             try{
                 // 设置音量
@@ -123,7 +138,7 @@ public class VolumeChangeObserver {
                 if (observer != null) {
                     VolumeChangeListener listener = observer.getVolumeChangeListener();
                     if (listener != null) {
-                        int volume = observer.getCurrentMusicVolume();
+                        double volume = observer.getCurrentMusicVolume();
                         if (volume >= 0) {
                             listener.onVolumeChanged(volume);
                         }

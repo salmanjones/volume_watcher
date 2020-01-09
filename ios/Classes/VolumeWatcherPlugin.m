@@ -54,7 +54,11 @@
                 NSLog(@"arguments = %@", dic);
                 NSNumber* volumeNumber = dic[@"volume"];
                 float volumeValue = volumeNumber.floatValue;
-                
+                if (volumeValue > 1.0) {
+                    volumeValue = 1.0;
+                } else if (volumeValue < 0.0) {
+                    volumeValue = 0.0;
+                }
                 [self setVolume:(volumeValue)];
             } @catch (NSException *exception) {
                 NSLog(@"%@", exception);
