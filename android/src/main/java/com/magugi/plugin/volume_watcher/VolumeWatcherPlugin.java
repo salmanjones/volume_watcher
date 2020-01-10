@@ -124,5 +124,6 @@ public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHa
     @Override
     public void onCancel(Object o) {
         mVolumeChangeObserver.unregisterReceiver();
+        this.eventSink = null;
     }
 }
