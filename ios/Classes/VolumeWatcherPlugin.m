@@ -7,6 +7,7 @@
 
 @implementation VolumeWatcherPlugin {
     FlutterEventSink _eventSink;
+    MPVolumeView *volumeView;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
@@ -125,7 +126,7 @@
     _eventSink = eventSink;
     
     // 获取系统音量
-    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
+    volumeView = [[MPVolumeView alloc] init];
     UISlider *volumeViewSlider = nil;
     for (UIView *view in [volumeView subviews]){
         if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
@@ -136,6 +137,11 @@
     
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     float currentVol = audioSession.outputVolume;
+    
+    // 隐藏音量面板
+    [volumeView setFrame:CGRectMake(-100, -100, 40, 40)];
+    [volumeView setHidden:NO];
+    [[UIApplication sharedApplication].delegate.window.rootViewController.view addSubview:volumeView];
     
     NSLog(@"当前初始化音量%f@", currentVol);
     _eventSink(@(currentVol));
@@ -156,6 +162,10 @@
 
 //flutter不再接收
 - (FlutterError* _Nullable)onCancelWithArguments:(id _Nullable)arguments {
+    // 恢复显示音量面板
+    [volumeView removeFromSuperview];
+    volumeView = nil;
+    
     NSLog(@"%@", arguments);
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
      _eventSink = nil;
