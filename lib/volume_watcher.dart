@@ -5,7 +5,12 @@ import 'package:flutter/widgets.dart';
 
 class VolumeWatcher extends StatefulWidget {
   final ValueChanged<double> onVolumeChangeListener;
-  VolumeWatcher({Key key, this.onVolumeChangeListener}) : super(key: key);
+  final Widget child;
+  VolumeWatcher({
+    Key key,
+    this.onVolumeChangeListener,
+    this.child,
+  }) : super(key: key);
 
   static const MethodChannel methodChannel =
       const MethodChannel('volume_watcher_method');
@@ -21,7 +26,8 @@ class VolumeWatcher extends StatefulWidget {
    * 获取当前系统最大音量
    */
   static Future<double> get getMaxVolume async {
-    final double maxVolume = await methodChannel.invokeMethod('getMaxVolume', {});
+    final double maxVolume =
+        await methodChannel.invokeMethod('getMaxVolume', {});
     return maxVolume;
   }
 
@@ -39,7 +45,7 @@ class VolumeWatcher extends StatefulWidget {
    */
   static Future<bool> setVolume(double volume) async {
     final bool success =
-        await methodChannel.invokeMethod('setVolume', {'volume':volume});
+        await methodChannel.invokeMethod('setVolume', {'volume': volume});
     return success;
   }
 }
@@ -98,6 +104,6 @@ class VolumeState extends State<VolumeWatcher> {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return widget.child ?? SizedBox();
   }
 }
