@@ -10,26 +10,39 @@
     MPVolumeView *volumeView;
 }
 
-+ (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    VolumeWatcherPlugin* instance = [[VolumeWatcherPlugin alloc] init];
-    
++ (void)registerWithRegistrar:(NSObject <FlutterPluginRegistrar> *)registrar {
+    VolumeWatcherPlugin *instance = [VolumeWatcherPlugin pluginWithVolumeView: [[MPVolumeView alloc] init]];
+
     //method channel
-    FlutterMethodChannel* methodChannel = [FlutterMethodChannel
-                                     methodChannelWithName:@"volume_watcher_method"
-                                     binaryMessenger:[registrar messenger]];
+    FlutterMethodChannel *methodChannel = [FlutterMethodChannel
+            methodChannelWithName:@"volume_watcher_method"
+                  binaryMessenger:[registrar messenger]];
     [registrar addMethodCallDelegate:instance channel:methodChannel];
-    
+
     //event channel
-    FlutterEventChannel* eventChannel = [FlutterEventChannel
-                                     eventChannelWithName:@"volume_watcher_event"
-                                     binaryMessenger:[registrar messenger]];
+    FlutterEventChannel *eventChannel = [FlutterEventChannel
+            eventChannelWithName:@"volume_watcher_event"
+                 binaryMessenger:[registrar messenger]];
     [eventChannel setStreamHandler:instance];
+}
+
+- (instancetype)initWithVolumeView:(MPVolumeView *)aVolumeView {
+    self = [super init];
+    if (self) {
+        volumeView = aVolumeView;
+    }
+
+    return self;
+}
+
++ (instancetype)pluginWithVolumeView:(MPVolumeView *)aVolumeView {
+    return [[self alloc] initWithVolumeView:aVolumeView];
 }
 
 /**
  * flutter方法回调
  */
-- (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
     if ([@"getMaxVolume" isEqualToString:call.method]) {
         //参数
         NSDictionary *dic = call.arguments;
@@ -41,19 +54,19 @@
         //参数
         NSDictionary *dic = call.arguments;
         NSLog(@"arguments = %@", dic);
-        
+
         // 获取系统音量
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
         float currentVol = audioSession.outputVolume;
         result([NSNumber numberWithFloat:currentVol]);
-    } else if ([@"setVolume" isEqualToString:call.method]) {        
+    } else if ([@"setVolume" isEqualToString:call.method]) {
         @autoreleasepool {
             bool success = true;
             @try {
                 //参数
                 NSDictionary *dic = call.arguments;
                 NSLog(@"arguments = %@", dic);
-                NSNumber* volumeNumber = dic[@"volume"];
+                NSNumber *volumeNumber = dic[@"volume"];
                 float volumeValue = volumeNumber.floatValue;
                 if (volumeValue > 1.0) {
                     volumeValue = 1.0;
@@ -65,9 +78,17 @@
                 NSLog(@"%@", exception);
                 success = false;
             }
-            
+
             result([NSNumber numberWithBool:success]);
         }
+    } else if ([@"hideUI" isEqualToString:call.method]) {
+        // 隐藏音量面板
+        [volumeView setFrame:CGRectMake(-100, -100, 40, 40)];
+        [volumeView setHidden:NO];
+        [[UIApplication sharedApplication].delegate.window.rootViewController.view addSubview:volumeView];
+    } else if ([@"showUI" isEqualToString:call.method]) {
+        // 恢复显示音量面板
+        [volumeView removeFromSuperview];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -76,19 +97,18 @@
 /**
  * 设置系统音量
  */
-- (void)setVolume: (float)value
-{
+- (void)setVolume:(float)value {
     MPVolumeView *volumeView = [[MPVolumeView alloc] init];
     UISlider *volumeViewSlider = nil;
-    
+
     for (UIView *view in volumeView.subviews) {
         if ([view isKindOfClass:[UISlider class]]) {
-            volumeViewSlider = (UISlider *)view;
+            volumeViewSlider = (UISlider *) view;
             break;
         }
     }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         volumeViewSlider.value = value;
     });
 }
@@ -97,10 +117,10 @@
  * 监听音量变化
  */
 - (void)onVolumeChanged:(NSNotification *)notification {
-    if(!_eventSink){
+    if (!_eventSink) {
         return;
     }
-    
+
     if ([[notification.userInfo objectForKey:@"AVSystemController_AudioCategoryNotificationParameter"] isEqualToString:@"Audio/Video"]) {
         if ([[notification.userInfo objectForKey:@"AVSystemController_AudioVolumeChangeReasonNotificationParameter"] isEqualToString:@"ExplicitVolumeChange"]) {
             float volume = [[notification.userInfo objectForKey:@"AVSystemController_AudioVolumeNotificationParameter"] floatValue];
@@ -113,8 +133,7 @@
 /**
  * 移除监听
  */
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
 }
 
@@ -122,30 +141,25 @@
 //此处的arguments可以转化为receiveBroadcastStream("init")的名称，这样我们就可以一个event来监听多个方法实例
 #pragma mark FlutterStreamHandler impl
 
-- (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
+- (FlutterError *)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
     _eventSink = eventSink;
-    
+
     // 获取系统音量
-    volumeView = [[MPVolumeView alloc] init];
+    MPVolumeView *volumeView = [[MPVolumeView alloc] init];
     UISlider *volumeViewSlider = nil;
-    for (UIView *view in [volumeView subviews]){
-        if ([view.class.description isEqualToString:@"MPVolumeSlider"]){
-            volumeViewSlider = (UISlider*)view;
+    for (UIView *view in [volumeView subviews]) {
+        if ([view.class.description isEqualToString:@"MPVolumeSlider"]) {
+            volumeViewSlider = (UISlider *) view;
             break;
         }
     }
-    
+
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     float currentVol = audioSession.outputVolume;
-    
-    // 隐藏音量面板
-    [volumeView setFrame:CGRectMake(-100, -100, 40, 40)];
-    [volumeView setHidden:NO];
-    [[UIApplication sharedApplication].delegate.window.rootViewController.view addSubview:volumeView];
-    
+
     NSLog(@"当前初始化音量%f@", currentVol);
-    _eventSink(@(currentVol));
-    
+    //_eventSink(@(currentVol));
+
     //注册监听事件
     NSError *error;
     // 创建单例对象并且使其设置为活跃状态.
@@ -161,14 +175,10 @@
 }
 
 //flutter不再接收
-- (FlutterError* _Nullable)onCancelWithArguments:(id _Nullable)arguments {
-    // 恢复显示音量面板
-    [volumeView removeFromSuperview];
-    volumeView = nil;
-    
+- (FlutterError *_Nullable)onCancelWithArguments:(id _Nullable)arguments {
     NSLog(@"%@", arguments);
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
-     _eventSink = nil;
+    _eventSink = nil;
     return nil;
 }
 @end

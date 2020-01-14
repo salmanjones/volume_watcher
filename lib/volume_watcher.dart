@@ -1,21 +1,70 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 class VolumeWatcher extends StatefulWidget {
-  final ValueChanged<double> onVolumeChangeListener;
+  final Function(double) onVolumeChangeListener;
   final Widget child;
   VolumeWatcher({
     Key key,
-    this.onVolumeChangeListener,
+    @required this.onVolumeChangeListener,
     this.child,
-  }) : super(key: key);
+  }) : super(key: key) {
+    assert(this.onVolumeChangeListener != null);
+  }
 
   static const MethodChannel methodChannel =
       const MethodChannel('volume_watcher_method');
   static const EventChannel eventChannel =
       const EventChannel('volume_watcher_event');
+  static StreamSubscription _subscription;
+  static Map<int, Function> _events = {};
+
+  /*
+   * event channel回调
+   */
+  static void _onEvent(Object event) {
+    _events.values.forEach((item) {
+      if (item != null) {
+        item(event);
+      }
+    });
+  }
+
+  /*
+   * event channel回调失败
+   */
+  static void _onError(Object error) {
+    print('Volume status: unknown.' + error.toString());
+  }
+
+  /// 添加监听器
+  /// 返回id, 用于删除监听器使用
+  static int addListener(Function onEvent) {
+    if (_subscription == null) {
+      //event channel 注册
+      _subscription = eventChannel
+          .receiveBroadcastStream('init')
+          .listen(_onEvent, onError: _onError);
+    }
+    if (onEvent != null) {
+      _events[onEvent.hashCode] = onEvent;
+      getCurrentVolume.then((value) {
+        onEvent(value);
+      });
+      return onEvent.hashCode;
+    }
+    return null;
+  }
+
+  /// 删除监听器
+  static void removeListener(int id) {
+    if (id != null) {
+      _events.remove(id);
+    }
+  }
 
   @override
   State<StatefulWidget> createState() {
@@ -48,58 +97,32 @@ class VolumeWatcher extends StatefulWidget {
         await methodChannel.invokeMethod('setVolume', {'volume': volume});
     return success;
   }
+
+  /// 隐藏音量面板
+  /// 仅ios有效
+  static set hideVolumeView(bool value) {
+    if (!Platform.isIOS) return;
+    if (value == true) {
+      methodChannel.invokeMethod('hideUI');
+    } else {
+      methodChannel.invokeMethod('showUI');
+    }
+  }
 }
 
 class VolumeState extends State<VolumeWatcher> {
-  StreamSubscription _subscription;
-  double currentVolume = 0;
+  int _listenerId;
 
   @override
   void initState() {
     super.initState();
-    if (_subscription == null) {
-      //event channel 注册
-      _subscription = VolumeWatcher.eventChannel
-          .receiveBroadcastStream("init")
-          .listen(_onEvent, onError: _onError);
-    }
-  }
-
-  /*
-   * event channel回调
-   */
-  void _onEvent(Object event) {
-    if (mounted) {
-      if (widget.onVolumeChangeListener != null) {
-        widget.onVolumeChangeListener(event);
-      }
-      setState(() {
-        currentVolume = event;
-      });
-    }
-  }
-
-  /*
-   * event channel回调失败
-   */
-  void _onError(Object error) {
-    print('Battery status: unknown.' + error.toString());
+    _listenerId = VolumeWatcher.addListener(widget.onVolumeChangeListener);
   }
 
   @override
   void dispose() {
-    if (_subscription != null) {
-      _subscription.cancel();
-    }
+    VolumeWatcher.removeListener(_listenerId);
     super.dispose();
-  }
-
-  @override
-  void deactivate() {
-    super.deactivate();
-    if (_subscription != null) {
-      _subscription.cancel();
-    }
   }
 
   @override

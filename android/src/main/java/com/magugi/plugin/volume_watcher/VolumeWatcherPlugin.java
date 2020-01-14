@@ -105,7 +105,7 @@ public class VolumeWatcherPlugin implements FlutterPlugin, EventChannel.StreamHa
         if (BuildConfig.DEBUG) {
             Log.d(VolumeChangeObserver.TAG, "initVolume = " + initVolume);
         }
-        eventSink.success(initVolume);
+        //eventSink.success(initVolume);
 
         //注册监听器
         mVolumeChangeObserver.registerReceiver();
