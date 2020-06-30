@@ -35,7 +35,7 @@
         NSLog(@"arguments = %@", dic);
         //最大音量
         float currMaxValue = 1.0f;
-        result([NSNumber numberWithFloat:currMaxValue]);
+        result(@(currMaxValue));
     } else if ([@"getCurrentVolume" isEqualToString:call.method]) {
         //参数
         NSDictionary *dic = call.arguments;
@@ -44,7 +44,7 @@
         // 获取系统音量
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
         float currentVol = audioSession.outputVolume;
-        result([NSNumber numberWithFloat:currentVol]);
+        result(@(currentVol));
     } else if ([@"setVolume" isEqualToString:call.method]) {        
         @autoreleasepool {
             bool success = true;
@@ -60,8 +60,7 @@
                 NSLog(@"%@", exception);
                 success = false;
             }
-            
-            result([NSNumber numberWithBool:success]);
+            result(@(success));
         }
     } else {
         result(FlutterMethodNotImplemented);

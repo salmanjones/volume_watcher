@@ -4,19 +4,19 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `Flutter`)
   - volume_watcher (from `.symlinks/plugins/volume_watcher/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: Flutter
   volume_watcher:
     :path: ".symlinks/plugins/volume_watcher/ios"
 
 SPEC CHECKSUMS:
-  Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
-  volume_watcher: 8c3fccf94e46ef52bcb435644e8969ddc687c580
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  volume_watcher: 9b9d5bd5374e060d58b916987a7ef925b1ad970e
 
-PODFILE CHECKSUM: aff02bfeed411c636180d6812254b2daeea14d09
+PODFILE CHECKSUM: f32fb4e7c14f8b3ca19a369d7be425dd9241af27
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.9.3

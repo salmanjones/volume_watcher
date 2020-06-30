@@ -29,8 +29,7 @@ class VolumeWatcher extends StatefulWidget {
    * 获取当前系统音量
    */
   static Future<num> get getCurrentVolume async {
-    final num currentVolume =
-        await methodChannel.invokeMethod('getCurrentVolume', {});
+    final num currentVolume = await methodChannel.invokeMethod('getCurrentVolume', {});
     return currentVolume;
   }
 
@@ -38,8 +37,7 @@ class VolumeWatcher extends StatefulWidget {
    * 设置系统音量
    */
   static Future<bool> setVolume(double volume) async {
-    final bool success =
-        await methodChannel.invokeMethod('setVolume', {'volume':volume});
+    final bool success = await methodChannel.invokeMethod('setVolume', {'volume':volume});
     return success;
   }
 }
@@ -53,9 +51,7 @@ class VolumeState extends State<VolumeWatcher> {
     super.initState();
     if (_subscription == null) {
       //event channel 注册
-      _subscription = VolumeWatcher.eventChannel
-          .receiveBroadcastStream("init")
-          .listen(_onEvent, onError: _onError);
+      _subscription = VolumeWatcher.eventChannel.receiveBroadcastStream("init").listen(_onEvent, onError: _onError);
     }
   }
 
@@ -77,7 +73,7 @@ class VolumeState extends State<VolumeWatcher> {
    * event channel回调失败
    */
   void _onError(Object error) {
-    print('Battery status: unknown.' + error.toString());
+    print('status: unknown.' + error.toString());
   }
 
   @override
