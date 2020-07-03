@@ -1,4 +1,4 @@
-package com.magugi.plugin.volume_watcher;
+package com.magugi.volume_watcher;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.util.Log;
-
 import java.lang.ref.WeakReference;
 
 /**
@@ -17,6 +16,12 @@ public class VolumeChangeObserver {
     private static final String VOLUME_CHANGED_ACTION = "android.media.VOLUME_CHANGED_ACTION";
     private static final String EXTRA_VOLUME_STREAM_TYPE = "android.media.EXTRA_VOLUME_STREAM_TYPE";
 
+    private VolumeChangeListener mVolumeChangeListener;
+    private VolumeBroadcastReceiver mVolumeBroadcastReceiver;
+    private Context mContext;
+    private AudioManager mAudioManager;
+    private boolean mRegistered = false;
+
     public interface VolumeChangeListener {
         /**
          * 系统媒体音量变化
@@ -25,12 +30,6 @@ public class VolumeChangeObserver {
          */
         void onVolumeChanged(int volume);
     }
-
-    private VolumeChangeListener mVolumeChangeListener;
-    private VolumeBroadcastReceiver mVolumeBroadcastReceiver;
-    private Context mContext;
-    private AudioManager mAudioManager;
-    private boolean mRegistered = false;
 
     public VolumeChangeObserver(Context context) {
         mContext = context;
@@ -69,6 +68,7 @@ public class VolumeChangeObserver {
                 }
             }catch (Exception ex){
                 //禁止日志
+                Log.d(TAG, "setVolume Exception:" + ex.getMessage());
             }
         }
     }
@@ -76,6 +76,7 @@ public class VolumeChangeObserver {
     public VolumeChangeListener getVolumeChangeListener() {
         return mVolumeChangeListener;
     }
+
     public void setVolumeChangeListener(VolumeChangeListener volumeChangeListener) {
         this.mVolumeChangeListener = volumeChangeListener;
     }
@@ -108,6 +109,7 @@ public class VolumeChangeObserver {
         }
     }
 
+    //监听音量改变
     private static class VolumeBroadcastReceiver extends BroadcastReceiver {
         private WeakReference<VolumeChangeObserver> mObserverWeakReference;
 
@@ -126,10 +128,6 @@ public class VolumeChangeObserver {
                         int volume = observer.getCurrentMusicVolume();
                         if (volume >= 0) {
                             listener.onVolumeChanged(volume);
-                        }
-
-                        if(BuildConfig.DEBUG){
-                            Log.d(TAG,"volume="+volume);
                         }
                     }
                 }

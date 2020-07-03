@@ -5,6 +5,8 @@ import 'package:volume_watcher/volume_watcher.dart';
 void main() {
   const MethodChannel channel = MethodChannel('volume_watcher');
 
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
       return '42';
@@ -16,6 +18,6 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    expect(await VolumeWatcher.getMaxVolume, 30);
+    expect(await VolumeWatcher.platformVersion, '42');
   });
 }

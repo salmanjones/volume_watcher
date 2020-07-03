@@ -1,3 +1,3 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.magugi.plugin.volume_watcher">
+  package="com.magugi.volume_watcher">
 </manifest>
