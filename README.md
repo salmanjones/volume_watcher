@@ -1,25 +1,30 @@
 # volume_watcher
+
+## Getting Started
+dependencies:
+  volume_watcher: ^1.3.0
+
+## Support Methods
 ```
-支持ios 与 android 以下功能：
-  1.实时监听返回系统音量值的改变，并返回音量值。 
-  2.返回系统支持的最大音量，Android｜iOS统一返回 0.0 - 1.0。 
-  3.返回系统改变音量前的初始值。
-  4.支持设置媒体音量
-  5.返回系统版本: Android 10 || iOS 13.5.1
-  6.支持隐藏iOS音量图标
-  
-对外提供如下方法：
-platformVersion
-getMaxVolume
-getCurrentVolume
-setVolume(0.0)
-//仅iOS有效
+VolumeWatcher.platformVersion
+VolumeWatcher.getMaxVolume
+VolumeWatcher.getCurrentVolume
+VolumeWatcher.setVolume(0.0)
+//Only valid on iOS
 VolumeWatcher.hideVolumeView = true;
+```
 
-对外提供监听：
-onVolumeChangeListener
+## Support Listener：
+```
+VolumeWatcher(
+  onVolumeChangeListener: (double volume) {
+    ///do sth.
+  },
+)
+```
 
-使用示例：
+## Super simple to use
+```
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -92,27 +97,27 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 VolumeWatcher(
-                  onVolumeChangeListener: (num volume) {
+                  onVolumeChangeListener: (double volume) {
                     setState(() {
                       currentVolume = volume;
                     });
                   },
                 ),
-                Text("系统版本=${_platformVersion}"),
-                Text("最大音量=${maxVolume}"),
-                Text("初始音量=${initVolume}"),
-                Text("当前音量=${currentVolume}"),
+                Text("platformVersion=${_platformVersion}"),
+                Text("maxVolume=${maxVolume}"),
+                Text("initVolume=${initVolume}"),
+                Text("currentVolume=${currentVolume}"),
                 RaisedButton(
                   onPressed: (){
                     VolumeWatcher.setVolume(maxVolume*0.5);
                   },
-                  child: Text("设置音量为${maxVolume*0.5}"),
+                  child: Text("setVolume:${maxVolume*0.5}"),
                 ),
                 RaisedButton(
                   onPressed: (){
                     VolumeWatcher.setVolume(maxVolume*0.0);
                   },
-                  child: Text("设置音量为${maxVolume*0.0}"),
+                  child: Text("setVolume:${maxVolume*0.0}"),
                 )
               ]),
         ),
@@ -121,14 +126,3 @@ class _MyAppState extends State<MyApp> {
   }
 }
 ```
-
-## Getting Started
-
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.

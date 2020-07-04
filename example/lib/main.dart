@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 VolumeWatcher(
-                  onVolumeChangeListener: (num volume) {
+                  onVolumeChangeListener: (double volume) {
                     setState(() {
                       currentVolume = volume;
                     });
