@@ -36,3 +36,6 @@
 * Android和ios音量范围统一为0.0~1.0
 * 隐藏iOS音量面板
 * 修复Android多次使用音量失效的问题
+
+## 1.3.1
+* Update README.md
