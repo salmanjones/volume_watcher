@@ -1,3 +1,5 @@
+Language: [English](README.md) | [中文简体](README-ZH.md)
+
 # volume_watcher
 ```
 支持ios 与 android 以下功能：
