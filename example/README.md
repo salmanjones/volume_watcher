@@ -2,16 +2,19 @@
 ```
 支持ios 与 android 以下功能：
   1.实时监听返回系统音量值的改变，并返回音量值。 
-  2.返回系统支持的最大音量，防止android不同机型最大值不同。 
+  2.返回系统支持的最大音量，Android｜iOS统一返回 0.0 - 1.0。 
   3.返回系统改变音量前的初始值。
   4.支持设置媒体音量
   5.返回系统版本: Android 10 || iOS 13.5.1
+  6.支持隐藏iOS音量图标
   
 对外提供如下方法：
 platformVersion
 getMaxVolume
 getCurrentVolume
 setVolume(0.0)
+//仅iOS有效
+VolumeWatcher.hideVolumeView = true;
 
 对外提供监听：
 onVolumeChangeListener
@@ -50,6 +53,7 @@ class _MyAppState extends State<MyApp> {
 
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
+      VolumeWatcher.hideVolumeView = true;
       platformVersion = await VolumeWatcher.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
@@ -83,33 +87,35 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              VolumeWatcher(
-                onVolumeChangeListener: (num volume) {
-                  setState(() {
-                    currentVolume = volume;
-                  });
-                },
-              ),
-              Text("系统版本=${_platformVersion}"),
-              Text("最大音量=${maxVolume}"),
-              Text("初始音量=${initVolume}"),
-              Text("当前音量=${currentVolume}"),
-              RaisedButton(
-                onPressed: (){
-                  VolumeWatcher.setVolume(maxVolume*0.5);
-                },
-                child: Text("设置音量为${maxVolume*0.5}"),
-              ),
-              RaisedButton(
-                onPressed: (){
-                  VolumeWatcher.setVolume(maxVolume*0.0);
-                },
-                child: Text("设置音量为${maxVolume*0.0}"),
-              )
-            ]),
+        body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                VolumeWatcher(
+                  onVolumeChangeListener: (num volume) {
+                    setState(() {
+                      currentVolume = volume;
+                    });
+                  },
+                ),
+                Text("系统版本=${_platformVersion}"),
+                Text("最大音量=${maxVolume}"),
+                Text("初始音量=${initVolume}"),
+                Text("当前音量=${currentVolume}"),
+                RaisedButton(
+                  onPressed: (){
+                    VolumeWatcher.setVolume(maxVolume*0.5);
+                  },
+                  child: Text("设置音量为${maxVolume*0.5}"),
+                ),
+                RaisedButton(
+                  onPressed: (){
+                    VolumeWatcher.setVolume(maxVolume*0.0);
+                  },
+                  child: Text("设置音量为${maxVolume*0.0}"),
+                )
+              ]),
+        ),
       ),
     );
   }

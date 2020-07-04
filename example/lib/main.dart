@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
 
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
+      VolumeWatcher.hideVolumeView = true;
       platformVersion = await VolumeWatcher.platformVersion;
     } on PlatformException {
       platformVersion = 'Failed to get platform version.';
@@ -64,33 +65,35 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              VolumeWatcher(
-                onVolumeChangeListener: (num volume) {
-                  setState(() {
-                    currentVolume = volume;
-                  });
-                },
-              ),
-              Text("系统版本=${_platformVersion}"),
-              Text("最大音量=${maxVolume}"),
-              Text("初始音量=${initVolume}"),
-              Text("当前音量=${currentVolume}"),
-              RaisedButton(
-                onPressed: (){
-                  VolumeWatcher.setVolume(maxVolume*0.5);
-                },
-                child: Text("设置音量为${maxVolume*0.5}"),
-              ),
-              RaisedButton(
-                onPressed: (){
-                  VolumeWatcher.setVolume(maxVolume*0.0);
-                },
-                child: Text("设置音量为${maxVolume*0.0}"),
-              )
-            ]),
+        body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                VolumeWatcher(
+                  onVolumeChangeListener: (num volume) {
+                    setState(() {
+                      currentVolume = volume;
+                    });
+                  },
+                ),
+                Text("系统版本=${_platformVersion}"),
+                Text("最大音量=${maxVolume}"),
+                Text("初始音量=${initVolume}"),
+                Text("当前音量=${currentVolume}"),
+                RaisedButton(
+                  onPressed: (){
+                    VolumeWatcher.setVolume(maxVolume*0.5);
+                  },
+                  child: Text("设置音量为${maxVolume*0.5}"),
+                ),
+                RaisedButton(
+                  onPressed: (){
+                    VolumeWatcher.setVolume(maxVolume*0.0);
+                  },
+                  child: Text("设置音量为${maxVolume*0.0}"),
+                )
+              ]),
+        ),
       ),
     );
   }
