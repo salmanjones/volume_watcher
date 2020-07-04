@@ -37,7 +37,6 @@ public class VolumeWatcherPlugin implements FlutterPlugin, StreamHandler, Method
 
     private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
         mVolumeChangeObserver = new VolumeChangeObserver(applicationContext);
-        mVolumeChangeObserver.setVolumeChangeListener(this);
 
         //method chanel
         methodChannel = new MethodChannel(messenger, CHANNEL + "_method");
@@ -62,14 +61,14 @@ public class VolumeWatcherPlugin implements FlutterPlugin, StreamHandler, Method
         if (call.method.equals("getPlatformVersion")) {
             result.success("Android " + android.os.Build.VERSION.RELEASE);
         } else if (call.method.equals("getMaxVolume")) {
-            result.success((double)mVolumeChangeObserver.getMaxMusicVolume());
+            result.success(mVolumeChangeObserver.getMaxMusicVolume());
         } else if (call.method.equals("getCurrentVolume")) {
-            result.success((double)mVolumeChangeObserver.getCurrentMusicVolume());
+            result.success(mVolumeChangeObserver.getCurrentMusicVolume());
         } else if (call.method.equals("setVolume")) {
             boolean success = true;
             try {
                 double volumeValue = Double.parseDouble(call.argument("volume").toString());
-                mVolumeChangeObserver.setVolume((int) volumeValue);
+                mVolumeChangeObserver.setVolume(volumeValue);
             } catch (Exception ex) {
                 success = false;
             }
@@ -80,26 +79,32 @@ public class VolumeWatcherPlugin implements FlutterPlugin, StreamHandler, Method
     }
 
     @Override
-    public void onVolumeChanged(int volume) {
-        if (eventSink != null) {
-            eventSink.success((double)volume);
-        }
-    }
-
-    @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
+        //初始化通知
         this.eventSink = eventSink;
+        //绑定监听
+        mVolumeChangeObserver.setVolumeChangeListener(this);
 
-        //实例化对象并设置监听器
-        int initVolume = mVolumeChangeObserver.getCurrentMusicVolume();
-        eventSink.success((double)initVolume);
+        //初始化返回当前音量
+        if (eventSink != null) {
+            double volume = mVolumeChangeObserver.getCurrentMusicVolume();
+            eventSink.success(volume);
+        }
 
         //注册监听器
         mVolumeChangeObserver.registerReceiver();
     }
 
     @Override
+    public void onVolumeChanged(double volume) {
+        if (eventSink != null) {
+            eventSink.success(volume);
+        }
+    }
+
+    @Override
     public void onCancel(Object arguments) {
         mVolumeChangeObserver.unregisterReceiver();
+        eventSink = null;
     }
 }

@@ -5,15 +5,18 @@
 @interface VolumeWatcherPlugin () <FlutterStreamHandler>
 @end
 
-@implementation VolumeWatcherPlugin
-FlutterEventSink _eventSink;
+@implementation VolumeWatcherPlugin {
+    FlutterEventSink _eventSink;
+    MPVolumeView *volumeView;
+}
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     //插件实例
-    VolumeWatcherPlugin* instance = [[VolumeWatcherPlugin alloc] init];
+    VolumeWatcherPlugin *instance = [VolumeWatcherPlugin pluginWithVolumeView: [[MPVolumeView alloc] init]];
+    
     //方法处理
     FlutterMethodChannel* methodChannel = [FlutterMethodChannel methodChannelWithName:@"volume_watcher_method"
-                                                              binaryMessenger:[registrar messenger]];
+                                                                      binaryMessenger:[registrar messenger]];
     [registrar addMethodCallDelegate:instance channel:methodChannel];
     //事件处理
     FlutterEventChannel* eventChannel = [FlutterEventChannel eventChannelWithName:@"volume_watcher_event"
@@ -21,45 +24,65 @@ FlutterEventSink _eventSink;
     [eventChannel setStreamHandler:instance];
 }
 
+- (instancetype)initWithVolumeView:(MPVolumeView *)aVolumeView {
+    self = [super init];
+    if (self) {
+        volumeView = aVolumeView;
+    }
+    return self;
+}
+
++ (instancetype)pluginWithVolumeView:(MPVolumeView *)aVolumeView {
+    return [[self alloc] initWithVolumeView:aVolumeView];
+}
+
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"getPlatformVersion" isEqualToString:call.method]) {
-      result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
-  }else if ([@"getMaxVolume" isEqualToString:call.method]) {
-      //参数
-      NSDictionary *dic = call.arguments;
-      NSLog(@"arguments = %@", dic);
-      //最大音量
-      float currMaxValue = 1.0f;
-      result(@(currMaxValue));
-  } else if ([@"getCurrentVolume" isEqualToString:call.method]) {
-      //参数
-      NSDictionary *dic = call.arguments;
-      NSLog(@"arguments = %@", dic);
-      
-      // 获取系统音量
-      AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-      float currentVol = audioSession.outputVolume;
-      result(@(currentVol));
-  } else if ([@"setVolume" isEqualToString:call.method]) {
-      @autoreleasepool {
-          bool success = true;
-          @try {
-              //参数
-              NSDictionary *dic = call.arguments;
-              NSLog(@"arguments = %@", dic);
-              NSNumber* volumeNumber = dic[@"volume"];
-              float volumeValue = volumeNumber.floatValue;
-              
-              [self setVolume:(volumeValue)];
-          } @catch (NSException *exception) {
-              NSLog(@"%@", exception);
-              success = false;
-          }
-          result(@(success));
-      }
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
+    if ([@"getPlatformVersion" isEqualToString:call.method]) {
+        result([@"iOS " stringByAppendingString:[[UIDevice currentDevice] systemVersion]]);
+    }else if ([@"getMaxVolume" isEqualToString:call.method]) {
+        //参数
+        NSDictionary *dic = call.arguments;
+        NSLog(@"arguments = %@", dic);
+        //最大音量
+        float currMaxValue = 1.0f;
+        result(@(currMaxValue));
+    } else if ([@"getCurrentVolume" isEqualToString:call.method]) {
+        //参数
+        NSDictionary *dic = call.arguments;
+        NSLog(@"arguments = %@", dic);
+        
+        // 获取系统音量
+        AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+        float currentVol = audioSession.outputVolume;
+        result(@(currentVol));
+    } else if ([@"setVolume" isEqualToString:call.method]) {
+        @autoreleasepool {
+            bool success = true;
+            @try {
+                //参数
+                NSDictionary *dic = call.arguments;
+                NSLog(@"arguments = %@", dic);
+                NSNumber* volumeNumber = dic[@"volume"];
+                float volumeValue = volumeNumber.floatValue;
+                
+                [self setVolume:(volumeValue)];
+            } @catch (NSException *exception) {
+                NSLog(@"%@", exception);
+                success = false;
+            }
+            result(@(success));
+        }
+    } else if ([@"hideUI" isEqualToString:call.method]) {
+        // 隐藏音量面板
+        [volumeView setFrame:CGRectMake(-100, -100, 40, 40)];
+        [volumeView setHidden:NO];
+        [[UIApplication sharedApplication].delegate.window.rootViewController.view addSubview:volumeView];
+    } else if ([@"showUI" isEqualToString:call.method]) {
+        // 恢复显示音量面板
+        [volumeView removeFromSuperview];
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
 
 /**
@@ -86,7 +109,7 @@ FlutterEventSink _eventSink;
 #pragma mark FlutterStreamHandler impl
 - (FlutterError*)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)eventSink {
     _eventSink = eventSink;
-
+    
     //初始音量
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
     float currentVol = audioSession.outputVolume;
@@ -109,7 +132,7 @@ FlutterEventSink _eventSink;
 //flutter不再接收
 - (FlutterError* _Nullable)onCancelWithArguments:(id _Nullable)arguments {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
-     _eventSink = nil;
+    _eventSink = nil;
     return nil;
 }
 
@@ -132,8 +155,7 @@ FlutterEventSink _eventSink;
 /**
  * 移除监听
  */
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVSystemController_SystemVolumeDidChangeNotification" object:nil];
 }
 
