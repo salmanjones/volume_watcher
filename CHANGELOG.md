@@ -44,4 +44,5 @@
 ## 2.0.0
 * 更新使用说明
 * 移除过期方法
-* 支持@NullSafe
+* 支持null-safety
+* 支持Flutter2.0+
