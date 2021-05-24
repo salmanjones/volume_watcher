@@ -37,8 +37,8 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    double initVolume;
-    double maxVolume;
+    double initVolume = 0;
+    double maxVolume = 0;
     try {
       initVolume = await VolumeWatcher.getCurrentVolume;
       maxVolume = await VolumeWatcher.getMaxVolume;
@@ -76,10 +76,10 @@ class _MyAppState extends State<MyApp> {
                     });
                   },
                 ),
-                Text("系统版本=${_platformVersion}"),
-                Text("最大音量=${maxVolume}"),
-                Text("初始音量=${initVolume}"),
-                Text("当前音量=${currentVolume}"),
+                Text("系统版本=$_platformVersion"),
+                Text("最大音量=$maxVolume"),
+                Text("初始音量=$initVolume"),
+                Text("当前音量=$currentVolume"),
                 RaisedButton(
                   onPressed: (){
                     VolumeWatcher.setVolume(maxVolume*0.5);

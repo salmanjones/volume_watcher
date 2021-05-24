@@ -7,10 +7,10 @@ import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.EventChannel.StreamHandler;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
-import io.flutter.plugin.common.EventChannel.StreamHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 
@@ -23,12 +23,6 @@ public class VolumeWatcherPlugin implements FlutterPlugin, StreamHandler, Method
     private MethodChannel methodChannel;
     private EventChannel eventChannel;
     private static final String CHANNEL = "volume_watcher";
-
-    /** Plugin registration. */
-    public static void registerWith(PluginRegistry.Registrar registrar) {
-        final VolumeWatcherPlugin instance = new VolumeWatcherPlugin();
-        instance.onAttachedToEngine(registrar.context(), registrar.messenger());
-    }
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
