@@ -1,48 +1,48 @@
 ## 0.0.1
-* 实现ios与android 音量监听
+* Realize ios and android volume monitoring
 
 ## 0.0.2
-* 取消控件界面默认返回内容
+* Cancel the default return content of the control interface
 
 ## 1.0.0
-* 完善功能与说明
+* Improve function and description
 
 ## 1.0.1
-* 完善说明
+* Complete description
 
 ## 1.1.0
-* 支持设置音量
+* Support volume setting
 
 ## 1.1.1
-* 调整android音量设置方式
+* Adjust the android volume setting method
 
 ## 1.1.2
-* 调整android音量设置方式
+* Adjust the android volume setting method
 
 ## 1.1.3
-* 调整android音量设置方式
+* Adjust the android volume setting method
 
 ## 1.1.4
-* 调整ios数据返回方式，防止崩溃
+* Adjust the return method of ios data to prevent crash
 
 ## 1.2.0
-* 调整ios数据返回类型，防止崩溃
-* 调整Android数据返回类型，防止崩溃
-* 返回系统版本号
-* 使用Flutter1.17重新生成插件，支撑最新版本
+* Adjust ios data return type to prevent crash
+* Adjust the Android data return type to prevent crashes
+* Return the system version number
+* Use Flutter 1.17 to regenerate the plug-in to support the latest version
 
 ## 1.3.0
-* 兼容FlutterPlugin插件方式
-* Android和ios音量范围统一为0.0~1.0
-* 隐藏iOS音量面板
-* 修复Android多次使用音量失效的问题
+* Compatible with FlutterPlugin plug-in mode
+* The volume range of Android and ios is unified to 0.0~1.0
+* Hide iOS volume panel
+* Fixed the issue that the volume fails when using Android multiple times
 
 ## 1.3.1
-* 更新使用说明
-* 修改监听数据返回类型
+* Update instructions
+* Modify the return type of monitoring data
 
 ## 2.0.0
-* 更新使用说明
-* 移除过期方法
-* 支持null-safety
-* 支持Flutter2.0+
+* Update instructions
+* Remove expiration method
+* Support null-safety
+* Support Flutter2.0+
