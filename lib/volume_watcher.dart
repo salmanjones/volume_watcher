@@ -62,6 +62,7 @@ class VolumeWatcher extends StatefulWidget {
       _events.remove(id);
     }
     _subscription?.cancel();
+    _subscription = null;
   }
 
   @override
