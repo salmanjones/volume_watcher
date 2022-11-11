@@ -10,7 +10,7 @@ import android.util.Log;
 import java.lang.ref.WeakReference;
 
 /**
- * 系统音量监听
+ * System volume monitoring
  */
 public class VolumeChangeObserver {
     public final static String TAG = "volume_watcher";
@@ -22,12 +22,12 @@ public class VolumeChangeObserver {
     private Context mContext;
     private AudioManager mAudioManager;
     private boolean mRegistered = false;
-    // 最大音量
+    // Maximum volume
     private double mMaxVolume;
 
     public interface VolumeChangeListener {
         /**
-         * 系统媒体音量变化
+         * System media volume changes
          *
          * @param volume
          */
@@ -41,7 +41,7 @@ public class VolumeChangeObserver {
     }
 
     /**
-     * 获取当前媒体音量
+     * Get the current media volume
      *
      * @return
      */
@@ -51,7 +51,7 @@ public class VolumeChangeObserver {
     }
 
     /**
-     * 获取系统最大媒体音量
+     * Get the maximum media volume of the system
      *
      * @return
      */
@@ -60,7 +60,7 @@ public class VolumeChangeObserver {
     }
 
     /**
-     * 设置音量
+     * Set the volume
      * @param value
      */
     public void setVolume(double value){
@@ -76,13 +76,13 @@ public class VolumeChangeObserver {
         int volume = (int)Math.round(actualValue * mMaxVolume);
         if(mAudioManager != null){
             try{
-                // 设置音量
+                // Set the volume
                 mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
                 if(volume<1){
                     mAudioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER,  0);
                 }
             }catch (Exception ex){
-                //禁止日志
+                // Print log
                 Log.d(TAG, "setVolume Exception:" + ex.getMessage());
             }
         }
@@ -97,7 +97,7 @@ public class VolumeChangeObserver {
     }
 
     /**
-     * 注册音量广播接收器
+     * Registration volume Broadcast receiver
      *
      * @return
      */
@@ -110,7 +110,7 @@ public class VolumeChangeObserver {
     }
 
     /**
-     * 解注册音量广播监听器，需要与 registerReceiver 成对使用
+     * The registered volume Broadcasting monitor needs to be used in pairs with the registerReceiver
      */
     public void unregisterReceiver() {
         if (mRegistered) {
@@ -124,7 +124,7 @@ public class VolumeChangeObserver {
         }
     }
 
-    //监听音量改变
+    // Change of listening volume changes
     private static class VolumeBroadcastReceiver extends BroadcastReceiver {
         private WeakReference<VolumeChangeObserver> mObserverWeakReference;
 
@@ -134,7 +134,7 @@ public class VolumeChangeObserver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            //媒体音量改变才通知
+            // The media volume change is not notified
             if (VOLUME_CHANGED_ACTION.equals(intent.getAction()) && (intent.getIntExtra(EXTRA_VOLUME_STREAM_TYPE, -1) == AudioManager.STREAM_MUSIC)) {
                 VolumeChangeObserver observer = mObserverWeakReference.get();
                 if (observer != null) {

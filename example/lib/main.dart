@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Plugin Example App'),
         ),
         body: Center(
           child: Column(
@@ -76,21 +76,21 @@ class _MyAppState extends State<MyApp> {
                   });
                 },
               ),
-              Text("系统版本=$_platformVersion"),
-              Text("最大音量=$maxVolume"),
-              Text("初始音量=$initVolume"),
-              Text("当前音量=$currentVolume"),
+              Text("System Version=$_platformVersion"),
+              Text("Maximum Volume=$maxVolume"),
+              Text("Initial Volume=$initVolume"),
+              Text("Current Volume=$currentVolume"),
               ElevatedButton(
                 onPressed: () {
                   VolumeWatcher.setVolume(maxVolume * 0.5);
                 },
-                child: Text("设置音量为${maxVolume * 0.5}"),
+                child: Text("Set the volume to: ${maxVolume * 0.5}"),
               ),
               ElevatedButton(
                 onPressed: () {
                   VolumeWatcher.setVolume(maxVolume * 0.0);
                 },
-                child: Text("设置音量为${maxVolume * 0.0}"),
+                child: Text("Set the volume to: ${maxVolume * 0.0}"),
               )
             ],
           ),

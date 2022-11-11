@@ -15,7 +15,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 
 /*
- * 系统音量监听
+ * System volume monitoring
  */
 public class VolumeWatcherPlugin implements FlutterPlugin, StreamHandler, MethodCallHandler, VolumeChangeObserver.VolumeChangeListener {
     private VolumeChangeObserver mVolumeChangeObserver;
@@ -74,18 +74,18 @@ public class VolumeWatcherPlugin implements FlutterPlugin, StreamHandler, Method
 
     @Override
     public void onListen(Object arguments, EventChannel.EventSink eventSink) {
-        //初始化通知
+        // Initialization notice
         this.eventSink = eventSink;
-        //绑定监听
+        // Binding monitoring
         mVolumeChangeObserver.setVolumeChangeListener(this);
 
-        //初始化返回当前音量
+        // Initialization Return to the current volume
         if (eventSink != null) {
             double volume = mVolumeChangeObserver.getCurrentMusicVolume();
             eventSink.success(volume);
         }
 
-        //注册监听器
+        // Registered monitor
         mVolumeChangeObserver.registerReceiver();
     }
 
