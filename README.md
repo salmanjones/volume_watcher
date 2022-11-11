@@ -13,6 +13,8 @@ VolumeWatcher.platformVersion
 VolumeWatcher.getMaxVolume
 VolumeWatcher.getCurrentVolume
 VolumeWatcher.setVolume(0.0)
+VolumeWatcher.addListener((double volume) {});
+VolumeWatcher.removeListener(listenerId);
 //Only valid on iOS
 VolumeWatcher.hideVolumeView = true;
 ```
@@ -24,6 +26,15 @@ VolumeWatcher(
     ///do sth.
   },
 )
+```
+
+OR
+
+```
+final listenerId = VolumeWatcher.addListener((double volume) {});
+
+// You can also cancel the listener with
+VolumeWatcher.removeListener(listenerId);
 ```
 
 ## Super simple to use
