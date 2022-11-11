@@ -4,8 +4,10 @@ Language: [English](README.md) | [中文简体](README-ZH.md)
 * Support ios and android real-time return system volume value, maximum volume, initial volume, support set volume.
 
 ## Getting Started
+```
 dependencies:
   volume_watcher: ^1.3.0
+```
 
 ## Support Methods
 ```
