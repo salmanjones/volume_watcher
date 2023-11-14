@@ -4,8 +4,10 @@ Language: [English](README.md) | [中文简体](README-ZH.md)
 * Support ios and android real-time return system volume value, maximum volume, initial volume, support set volume.
 
 ## Getting Started
+```
 dependencies:
   volume_watcher: ^1.3.0
+```
 
 ## Support Methods
 ```
@@ -13,6 +15,8 @@ VolumeWatcher.platformVersion
 VolumeWatcher.getMaxVolume
 VolumeWatcher.getCurrentVolume
 VolumeWatcher.setVolume(0.0)
+VolumeWatcher.addListener((double volume) {});
+VolumeWatcher.removeListener(listenerId);
 //Only valid on iOS
 VolumeWatcher.hideVolumeView = true;
 ```
@@ -24,6 +28,15 @@ VolumeWatcher(
     ///do sth.
   },
 )
+```
+
+OR
+
+```
+final listenerId = VolumeWatcher.addListener((double volume) {});
+
+// You can also cancel the listener with
+VolumeWatcher.removeListener(listenerId);
 ```
 
 ## Super simple to use
@@ -67,8 +80,8 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    double initVolume;
-    double maxVolume;
+    double initVolume = 0;
+    double maxVolume = 0;
     try {
       initVolume = await VolumeWatcher.getCurrentVolume;
       maxVolume = await VolumeWatcher.getMaxVolume;
@@ -93,36 +106,37 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Plugin Example App'),
         ),
         body: Center(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                VolumeWatcher(
-                  onVolumeChangeListener: (double volume) {
-                    setState(() {
-                      currentVolume = volume;
-                    });
-                  },
-                ),
-                Text("platformVersion=${_platformVersion}"),
-                Text("maxVolume=${maxVolume}"),
-                Text("initVolume=${initVolume}"),
-                Text("currentVolume=${currentVolume}"),
-                RaisedButton(
-                  onPressed: (){
-                    VolumeWatcher.setVolume(maxVolume*0.5);
-                  },
-                  child: Text("setVolume:${maxVolume*0.5}"),
-                ),
-                RaisedButton(
-                  onPressed: (){
-                    VolumeWatcher.setVolume(maxVolume*0.0);
-                  },
-                  child: Text("setVolume:${maxVolume*0.0}"),
-                )
-              ]),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              VolumeWatcher(
+                onVolumeChangeListener: (double volume) {
+                  setState(() {
+                    currentVolume = volume;
+                  });
+                },
+              ),
+              Text("System Version=$_platformVersion"),
+              Text("Maximum Volume=$maxVolume"),
+              Text("Initial Volume=$initVolume"),
+              Text("Current Volume=$currentVolume"),
+              ElevatedButton(
+                onPressed: () {
+                  VolumeWatcher.setVolume(maxVolume * 0.5);
+                },
+                child: Text("Set the volume to: ${maxVolume * 0.5}"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  VolumeWatcher.setVolume(maxVolume * 0.0);
+                },
+                child: Text("Set the volume to: ${maxVolume * 0.0}"),
+              )
+            ],
+          ),
         ),
       ),
     );

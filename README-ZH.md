@@ -1,31 +1,46 @@
 Language: [English](README.md) | [中文简体](README-ZH.md)
 
 # volume_watcher
+* 支持iOS和Android实时返回系统音量值，最大音量，初始音量，支持集卷。
+
+## 入门
 ```
-支持ios 与 android 以下功能：
-  1.实时监听返回系统音量值的改变，并返回音量值。 
-  2.返回系统支持的最大音量，Android｜iOS统一返回 0.0 - 1.0。 
-  3.返回系统改变音量前的初始值。
-  4.支持设置媒体音量
-  5.返回系统版本: Android 10 || iOS 13.5.1
-  6.支持隐藏iOS音量图标
-  
-对外提供如下方法：
+dependencies:
+  volume_watcher: ^1.3.0
+```
+
+## 对外提供如下方法：
+```
 VolumeWatcher.platformVersion
 VolumeWatcher.getMaxVolume
 VolumeWatcher.getCurrentVolume
 VolumeWatcher.setVolume(0.0)
+VolumeWatcher.addListener((double volume) {});
+VolumeWatcher.removeListener(listenerId);
 //仅对IOS生效
 VolumeWatcher.hideVolumeView = true;
+```
 
-对外提供监听：
+## 对外提供监听：
+```
 VolumeWatcher(
   onVolumeChangeListener: (double volume) {
     ///do sth.
   },
 )
+```
 
-使用示例：
+或者
+
+```
+final listenerId = VolumeWatcher.addListener((double volume) {});
+
+// You can also cancel the listener with
+VolumeWatcher.removeListener(listenerId);
+```
+
+## 使用示例：
+```
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -65,8 +80,8 @@ class _MyAppState extends State<MyApp> {
       platformVersion = 'Failed to get platform version.';
     }
 
-    double initVolume;
-    double maxVolume;
+    double initVolume = 0;
+    double maxVolume = 0;
     try {
       initVolume = await VolumeWatcher.getCurrentVolume;
       maxVolume = await VolumeWatcher.getMaxVolume;
@@ -91,50 +106,40 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Plugin Example App'),
         ),
         body: Center(
           child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                VolumeWatcher(
-                  onVolumeChangeListener: (num volume) {
-                    setState(() {
-                      currentVolume = volume;
-                    });
-                  },
-                ),
-                Text("系统版本=${_platformVersion}"),
-                Text("最大音量=${maxVolume}"),
-                Text("初始音量=${initVolume}"),
-                Text("当前音量=${currentVolume}"),
-                RaisedButton(
-                  onPressed: (){
-                    VolumeWatcher.setVolume(maxVolume*0.5);
-                  },
-                  child: Text("设置音量为${maxVolume*0.5}"),
-                ),
-                RaisedButton(
-                  onPressed: (){
-                    VolumeWatcher.setVolume(maxVolume*0.0);
-                  },
-                  child: Text("设置音量为${maxVolume*0.0}"),
-                )
-              ]),
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              VolumeWatcher(
+                onVolumeChangeListener: (double volume) {
+                  setState(() {
+                    currentVolume = volume;
+                  });
+                },
+              ),
+              Text("System Version=$_platformVersion"),
+              Text("Maximum Volume=$maxVolume"),
+              Text("Initial Volume=$initVolume"),
+              Text("Current Volume=$currentVolume"),
+              ElevatedButton(
+                onPressed: () {
+                  VolumeWatcher.setVolume(maxVolume * 0.5);
+                },
+                child: Text("Set the volume to: ${maxVolume * 0.5}"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  VolumeWatcher.setVolume(maxVolume * 0.0);
+                },
+                child: Text("Set the volume to: ${maxVolume * 0.0}"),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 }
 ```
-
-## Getting Started
-
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.

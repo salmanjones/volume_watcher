@@ -23,7 +23,7 @@ class VolumeWatcher extends StatefulWidget {
   static Map<int, Function> _events = {};
 
   /*
-   * event channel回调
+   * Event Channel callback
    */
   static void _onEvent(dynamic event) {
     _events.values.forEach((Function? item) {
@@ -32,16 +32,16 @@ class VolumeWatcher extends StatefulWidget {
   }
 
   /*
-   * event channel回调失败
+   * Event Channel's callback failure
    */
   static void _onError(Object error) {
     print('Volume status: unknown.' + error.toString());
   }
 
-  /// 添加监听器
-  /// 返回id, 用于删除监听器使用
+  /// Add a monitor
+  /// Returns the id, used to delete the listener
   static int? addListener(Function? onEvent) {
-    //event channel 注册
+    // Event Channel registration
     _subscription ??= eventChannel
         .receiveBroadcastStream('init')
         .listen(_onEvent, onError: _onError);
@@ -56,12 +56,13 @@ class VolumeWatcher extends StatefulWidget {
     return null;
   }
 
-  /// 删除监听器
+  /// Delete monitor
   static void removeListener(int? id) {
     if (id != null) {
       _events.remove(id);
     }
     _subscription?.cancel();
+    _subscription = null;
   }
 
   @override
@@ -76,7 +77,7 @@ class VolumeWatcher extends StatefulWidget {
   }
 
   /*
-   * 获取当前系统最大音量
+   * Get the maximum volume of the current system
    */
   static Future<double> get getMaxVolume async {
     final double maxVolume =
@@ -85,7 +86,7 @@ class VolumeWatcher extends StatefulWidget {
   }
 
   /*
-   * 获取当前系统音量
+   * Get the current system volume
    */
   static Future<double> get getCurrentVolume async {
     final double currentVolume =
@@ -94,7 +95,7 @@ class VolumeWatcher extends StatefulWidget {
   }
 
   /*
-   * 设置系统音量
+   * Set the system volume
    */
   static Future<bool> setVolume(double volume) async {
     final bool success =
@@ -102,8 +103,8 @@ class VolumeWatcher extends StatefulWidget {
     return success;
   }
 
-  /// 隐藏音量面板
-  /// 仅ios有效
+  /// Hidden volume panel
+  /// Only works with iOS
   static set hideVolumeView(bool value) {
     if (!Platform.isIOS) return;
     if (value == true) {
